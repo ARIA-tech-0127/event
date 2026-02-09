@@ -1,0 +1,210 @@
+---
+// ① 脳のエリア
+import { getCollection } from 'astro:content';
+
+const pageTitle = "合成音声イベント";
+const allNotes = await getCollection('notes');
+
+const activeNotes = allNotes.filter(note => !note.data.archived);
+const archivedNotes = allNotes.filter(note => note.data.archived);
+const allTags = [...new Set(allNotes.flatMap((note) => note.data.tags))];
+---
+
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>{pageTitle}</title>
+    <style>
+      /* ② 体のデザイン（CSS） */
+      body { background-color: #f1f3f4; font-family: sans-serif; margin: 20px; color: #333; }
+      
+      /* --- 【重要】カード内の画像制御：包んでいるタグごと制限 --- */
+      .content-preview :global(p) {
+        margin: 0;
+        display: flex;
+        justify-content: center;
+      }
+      .content-preview :global(img) {
+        width: 100% !important;
+        max-width: 300px !important; /* 横幅をカードに合わせて縮小 */
+        height: auto !important;
+        max-height: 200px !important;
+        object-fit: contain;
+        border-radius: 4px;
+        margin: 10px auto;
+        display: block;
+      }
+
+      /* モーダル内は大きく表示 */
+      #modalBody :global(img) {
+        max-width: 100% !important;
+        height: auto !important;
+        border-radius: 8px;
+        margin: 15px 0;
+      }
+
+      .content-preview a, #modalBody a { color: #1a73e8; text-decoration: underline; word-break: break-all; }
+
+      /* タブ切り替え */
+      .view-switch { margin-bottom: 20px; border-bottom: 2px solid #ddd; display: flex; gap: 20px; }
+      .view-btn { background: none; border: none; font-size: 1.1rem; padding: 10px; cursor: pointer; color: #666; }
+      .view-btn.active { color: #1a73e8; border-bottom: 3px solid #1a73e8; font-weight: bold; }
+
+      .filter-container { margin-bottom: 20px; display: flex; gap: 8px; flex-wrap: wrap; }
+      .filter-btn { 
+        padding: 6px 16px; border-radius: 20px; background: #fff; border: 1px solid #ccc; 
+        cursor: pointer; font-size: 0.9rem; transition: 0.2s;
+      }
+      .filter-btn.active { background: #1a73e8; color: white; border-color: #1a73e8; }
+
+      /* カードのグリッド設定 */
+      .grid-container { 
+        display: grid; 
+        grid-template-columns: repeat(auto-fill, minmax(280px, 400px));
+        gap: 16px; 
+      }
+      
+      /* --- 【改造】カード自体の設定：高さを可変にしつつ上限を設ける --- */
+      .card { 
+        background: white; border: 1px solid #e0e0e0; border-radius: 8px; padding: 16px; 
+        cursor: pointer; transition: 0.3s;
+        height: auto;               /* 高さは中身に合わせる */
+        max-height: calc(200px + 600px); /* 画像(200px) + テキスト(600px)が上限 */
+        display: flex; 
+        flex-direction: column;
+        overflow: hidden;
+      }
+      .card.hidden { display: none; }
+
+      /* カード内のプレビューとモーダル本体の両方に適用 */
+      .content-preview, 
+      #modalBody {
+        /* 改行（Enter）をそのまま反映し、枠線で自動折り返しする設定 */
+        white-space: pre-wrap; 
+        word-break: break-all; /* 長い英単語なども枠内で折り返す */
+      }
+
+      /* カード内は行数を制限しているので、以下の設定も維持 */
+      .content-preview {
+        display: -webkit-box;
+        -webkit-line-clamp: 5; 
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+
+      /* モーダル */
+      .modal-overlay {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center; z-index: 100;
+      }
+      .modal-content { 
+        background: white; width: 90%; max-width: 800px; max-height: 90vh; 
+        overflow-y: auto; border-radius: 12px; padding: 30px; position: relative; 
+      }
+      .close-btn { position: absolute; top: 10px; right: 15px; font-size: 28px; cursor: pointer; border: none; background: none; }
+    </style>
+  </head>
+  <body>
+    <h1>{pageTitle}</h1>
+
+    <div class="view-switch">
+      <button class="view-btn active" id="btnMain">メイン</button>
+      <button class="view-btn" id="btnArchive">アーカイブ ({archivedNotes.length})</button>
+    </div>
+
+    <div class="filter-container">
+      <button class="filter-btn active" data-filter="all">すべて</button>
+      {allTags.map((tag) => (
+        <button class="filter-btn" data-filter={tag}>#{tag}</button>
+      ))}
+    </div>
+
+    <div class="grid-container" id="mainGrid">
+      {activeNotes.map(async (note) => {
+        const { Content } = await note.render();
+        return (
+          <div class="card" data-title={note.data.title} data-tags={note.data.tags.join(' ')}>
+            <h2>{note.data.title}</h2>
+            <div class="content-preview"><Content /></div>
+            <div class="tag-list" style="margin-top:10px;">
+              {note.data.tags.map(tag => <span class="tag" data-tag-click={tag}>#{tag}</span>)}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+
+    <div class="grid-container" id="archiveGrid" style="display: none;">
+      {archivedNotes.map(async (note) => {
+        const { Content } = await note.render();
+        return (
+          <div class="card" style="opacity: 0.7;" data-title={note.data.title} data-tags={note.data.tags.join(' ')}>
+            <h2>[済] {note.data.title}</h2>
+            <div class="content-preview"><Content /></div>
+            <div class="tag-list" style="margin-top:10px;">
+              {note.data.tags.map(tag => <span class="tag" data-tag-click={tag}>#{tag}</span>)}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+
+    <div id="modal" class="modal-overlay">
+      <div class="modal-content">
+        <button id="close" class="close-btn">&times;</button>
+        <h2 id="modalTitle"></h2>
+        <div id="modalBody"></div>
+      </div>
+    </div>
+
+    <script>
+      const btnMain = document.getElementById('btnMain');
+      const btnArchive = document.getElementById('btnArchive');
+      const mainGrid = document.getElementById('mainGrid');
+      const archiveGrid = document.getElementById('archiveGrid');
+      const buttons = document.querySelectorAll('.filter-btn');
+      const allCards = document.querySelectorAll('.card');
+      const modal = document.getElementById('modal');
+
+      function filterNotes(filterTag) {
+        buttons.forEach(btn => btn.classList.toggle('active', btn.dataset.filter === filterTag));
+        allCards.forEach(card => {
+          const cardTags = card.dataset.tags ? card.dataset.tags.split(' ') : [];
+          card.classList.toggle('hidden', filterTag !== 'all' && !cardTags.includes(filterTag));
+        });
+      }
+
+      buttons.forEach(btn => btn.addEventListener('click', () => filterNotes(btn.dataset.filter)));
+      
+      document.addEventListener('click', (e) => {
+        if (e.target.dataset.tagClick) {
+          e.stopPropagation();
+          filterNotes(e.target.dataset.tagClick);
+        }
+      });
+
+      btnMain.addEventListener('click', () => {
+        btnMain.classList.add('active'); btnArchive.classList.remove('active');
+        mainGrid.style.display = 'grid'; archiveGrid.style.display = 'none';
+      });
+      btnArchive.addEventListener('click', () => {
+        btnArchive.classList.add('active'); btnMain.classList.remove('active');
+        mainGrid.style.display = 'none'; archiveGrid.style.display = 'grid';
+      });
+
+      allCards.forEach(card => {
+        card.addEventListener('click', () => {
+          const title = card.querySelector('h2').innerText;
+          const contentHTML = card.querySelector('.content-preview').innerHTML;
+          document.getElementById('modalTitle').innerText = title;
+          document.getElementById('modalBody').innerHTML = contentHTML;
+          modal.style.display = 'flex';
+        });
+      });
+
+      document.getElementById('close').onclick = () => modal.style.display = 'none';
+      window.onclick = (e) => { if (e.target === modal) modal.style.display = 'none'; };
+    </script>
+  </body>
+</html>
