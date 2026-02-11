@@ -70,7 +70,7 @@ const allTags = [...new Set(allNotes.flatMap((note) => note.data.tags))];
         background: white; border: 1px solid #e0e0e0; border-radius: 8px; padding: 16px; 
         cursor: pointer; transition: 0.3s;
         height: auto;               /* 高さは中身に合わせる */
-        text-align: left;　/* text-align が center になっていたら left に変更 */
+        text-align: left; /* text-align が center になっていたら left に変更 */
         max-height: calc(200px + 600px); /* 画像(200px) + テキスト(600px)が上限 */
         display: flex; 
         flex-direction: column;
