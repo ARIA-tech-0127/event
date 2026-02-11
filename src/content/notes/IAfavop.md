@@ -4,7 +4,7 @@ tags: ["ショップ"]
 date: 2026-02-07
 archived: false
 ---
-![写真](/images/IAFavop_shop.jpg)
+![写真](/images/IAFavop_shop.png)
 
 ■販売期間
 2月7日(土)～2月22日(日)
