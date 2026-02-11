@@ -4,7 +4,7 @@ tags: ["ショップ"]
 date: 2026-02-13
 archived: false
 ---
-![写真](/images/KAITO_shop.jpg)
+![写真](/images/KAITO_Shop.jpg)
 
 ◆店舗
 【新宿マルイ アネックス】
