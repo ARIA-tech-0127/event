@@ -2,7 +2,7 @@
 title: "POP UP STORE『KAITO 20th Anniversary』"
 tags: ["ショップ"]
 date: 2026-02-13
-archived: ture
+archived: false
 ---
 ![写真](/images/KAITO_shop.jpg)
 

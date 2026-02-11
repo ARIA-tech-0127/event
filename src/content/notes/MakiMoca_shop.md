@@ -2,7 +2,7 @@
 title: "「弦巻マキ&宮舞モカ」POP UP SHOP 新宿マルイ"
 tags: ["ショップ"]
 date: 2026-01-27
-archived: ture
+archived: true
 ---
 ![写真](/images/MakiMoca_shop.jpg)
 

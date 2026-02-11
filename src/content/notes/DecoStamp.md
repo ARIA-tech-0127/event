@@ -2,7 +2,7 @@
 title: "デコミク LIVE 『Hello』開催記念スタンプラリー"
 tags: ["展示","ショップ"]
 date: 2026-02-09
-archived: ture
+archived: false
 ---
 ![写真](/images/DecoStamp.jpg)
 
