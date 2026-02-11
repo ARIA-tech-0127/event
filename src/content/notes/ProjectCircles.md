@@ -4,7 +4,7 @@ tags: ["ショップ","展示"]
 date: 2026-04-30
 archived: false
 ---
-![写真](/images/ProjectCircles1.jpg)
+![写真](/images/ProjectCircles1.png)
 
 ■開催期間
 2026年4月30日（木）～5月4日（月・祝）

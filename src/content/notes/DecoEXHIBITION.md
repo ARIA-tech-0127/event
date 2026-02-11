@@ -4,7 +4,7 @@ tags: ["ショップ","展示"]
 date: 2026-01-31
 archived: false
 ---
-![写真](/images/DecoExhibition.jpg)
+![写真](/images/DecoExihibition.jpg)
 
 ■開催場所	
 東京・有楽町マルイ
