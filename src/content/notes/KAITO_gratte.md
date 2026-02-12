@@ -4,7 +4,7 @@ tags: ["ショップ"]
 date: 2026-02-10
 archived: false
 ---
-![写真](/images/KAITO_gratte.jpg)
+![写真](/images/KAITO_Gratte.jpg)
 
 ■開催期間
 2026年2月10日（火）～2026年3月15日（日）
