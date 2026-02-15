@@ -2,7 +2,7 @@
 title: "デコミク LIVE starring 初音ミク『Hello』Produced by DECO*27"
 tags: ["ライブ"]
 date: 2026-02-14
-archived: false
+archived: true
 ---
 ![写真](/images/deco_live.jpg)
 
